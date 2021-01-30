@@ -1,0 +1,10 @@
+Package: PackageR
+Type: Package
+Title: Packge1
+Version: 0.1.0
+Author: Camilo Lozada
+Maintainer: Camilo Lozada <clozada@unal.edu.co>
+Description: This package contains default functions of an R course.
+License: GPL
+Encoding: UTF-8
+LazyData: true
