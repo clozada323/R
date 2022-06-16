@@ -1,0 +1,269 @@
+---
+output:
+  pdf_document: 
+    toc: yes
+    number_sections: yes
+  html_document: default
+---
+
+---
+title: "Taller 2 - Componentes"
+author: "Maria Fernanda Piñeros"
+date: "23/5/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Punto 1
+
+Los siguientes puntos deben realizarse posterior a la limpieza de valores atípicos. Indique los valores omitidos.
+
+La base de datos punto 1 contiene 11 indicadores económicos y sociales de 96 países. Las variables observadas son:
+
+X_1  = Tasa anual de crecimiento de la población,
+
+X_2  = Tasa de mortalidad infantil por cada 1000 nacidos vivos.
+
+X_3= Porcentaje de mujeres en la población activa.
+
+X_4= PNB en 1995 (en millones de dólares).
+
+X_5= Producción de electricidad (en millones kW/h).
+
+X_6= Líneas telefónicas por cada 1000 habitantes,
+
+X_7= Consumo de agua per cápita,
+
+X_8= Proporción de la superficie del país cubierta por bosques,
+
+X_9= Proporción de forestación anual,
+
+X_10= Consumo de energía per cápita, 
+
+X_11= Emisión de CO2 per cápita.
+
+## Descargar datos
+```{r}
+library(readxl)
+setwd("C:/Users/ASUS/Desktop/Universidad/R_LaSalle")
+Datos<- read_excel('Base punto 1.xlsx')
+```
+
+## Eliminamos los datos atípicos
+
+Se realiza un análisis gráfico por medio de diagramas de caja para detectar datos atípicos o outliers, los cuales serán eliminados .
+
+```{r, fig.width=10, fig.height=10}
+par(mfrow=c(3,4))
+boxplot(Datos$`X 1`, main = "X1 con outliers", col=2)
+boxplot(Datos$`X 2`, main = "X2 con outliers", col=2)
+boxplot(Datos$`X 3`, main = "X3 con outliers", col=2)
+boxplot(Datos$`X 4`, main = "X4 con outliers", col=2)
+boxplot(Datos$`X 5`, main = "X5 con outliers", col=2)
+boxplot(Datos$`X 6`, main = "X6 con outliers", col=2)
+boxplot(Datos$`X 7`, main = "X7 con outliers", col=2)
+boxplot(Datos$`X 8`, main = "X8 con outliers", col=2)
+boxplot(Datos$`X 9`, main = "X9 con outliers", col=2)
+boxplot(Datos$`X 10`, main = "X10 con outliers", col=2)
+boxplot(Datos$`X 11`, main = "X11 con outliers", col=2)
+```
+
+Luego, definimos una función para eliminar todos los datos atíticos que no se encuentren entre el cuantil 0,5 y 0,95
+
+```{r  `echo = FALSE`}
+impute_outliers <- function(x, removeNA = TRUE){
+  quantiles <- quantile(x, c(0.05, 0.95), na.rm = removeNA)
+  x[x<quantiles[1]] <- mean(x, na.rm = removeNA)
+  x[x>quantiles[2]] <- median(x, na.rm = removeNA)
+  x
+}
+```
+
+La cual aplicaremos a cada variable desde x1 hasta x11, obteniendo una base de datos sin valores atípicos.
+
+```{r}
+Datos$`X 1` <- impute_outliers(Datos$`X 1`,)
+Datos$`X 2` <- impute_outliers(Datos$`X 2`,)
+Datos$`X 3` <- impute_outliers(Datos$`X 3`,)
+Datos$`X 4` <- impute_outliers(Datos$`X 4`,)
+Datos$`X 5` <- impute_outliers(Datos$`X 5`,)
+Datos$`X 6` <- impute_outliers(Datos$`X 6`,)
+Datos$`X 7` <- impute_outliers(Datos$`X 7`,)
+Datos$`X 8` <- impute_outliers(Datos$`X 8`,)
+Datos$`X 9` <- impute_outliers(Datos$`X 9`,)
+Datos$`X 10` <- impute_outliers(Datos$`X 10`,)
+Datos$`X 11` <- impute_outliers(Datos$`X 11`,)
+```
+
+De esta forma, al volver a graficar los diagramas de caja después de eliminar los datos atípicos tenemos que:
+
+```{r, echo = FALSE, fig.width=10, fig.height=10}
+par(mfrow=c(3,4))
+boxplot(Datos$`X 1`, main = "X1 sin outliers", col=3)
+boxplot(Datos$`X 2`, main = "X2 sin outliers", col=3)
+boxplot(Datos$`X 3`, main = "X3 sin outliers", col=3)
+boxplot(Datos$`X 4`, main = "X4 sin outliers", col=3)
+boxplot(Datos$`X 5`, main = "X5 sin outliers", col=3)
+boxplot(Datos$`X 6`, main = "X6 sin outliers", col=3)
+boxplot(Datos$`X 7`, main = "X7 sin outliers", col=3)
+boxplot(Datos$`X 8`, main = "X8 sin outliers", col=3)
+boxplot(Datos$`X 9`, main = "X9 sin outliers", col=3)
+boxplot(Datos$`X 10`, main = "X10 sin outliers", col=3)
+boxplot(Datos$`X 11`, main = "X11 sin outliers", col=3)
+```
+
+
+
+
+## Estadística descriptiva
+
+Tabla generada mediante:
+
+library(stargazer)
+stargazer(Datos, type = "text")
+
+\begin{table}[!htbp] \centering 
+  \caption{Estadistica descriptiva} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lccccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Pctl(25)} & \multicolumn{1}{c}{Pctl(75)} & \multicolumn{1}{c}{Max} \\ 
+\hline \\[-1.8ex] 
+X 1 & 96 & 1.871 & 1.240 & $-$1 & 0.9 & 2.7 & 6 \\ 
+X 2 & 96 & 39.062 & 32.138 & 4 & 11 & 56.5 & 124 \\ 
+X 3 & 96 & 37.281 & 8.774 & 13 & 31 & 44 & 51 \\ 
+X 4 & 96 & 116,587.400 & 223,602.000 & 1,353 & 8,014.2 & 109,221.8 & 1,451,051 \\ 
+X 5 & 96 & 69,261.320 & 134,978.100 & 6 & 4,675.8 & 65,783.5 & 928,083 \\ 
+X 6 & 96 & 165.125 & 195.991 & 2 & 15.5 & 231.5 & 681 \\ 
+X 7 & 96 & 509.844 & 574.629 & 7 & 178.5 & 662 & 4,575 \\ 
+X 8 & 96 & 27.333 & 20.025 & 0 & 10 & 42.2 & 77 \\ 
+X 9 & 96 & 0.553 & 1.348 & $-$4 & $-$0.03 & 1.2 & 5 \\ 
+X 10 & 96 & 1,854.427 & 2,239.285 & 20 & 287.8 & 2,553.5 & 10,531 \\ 
+X 11 & 96 & 4.554 & 5.222 & 0.100 & 0.700 & 7.050 & 33.900 \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table}  
+.
+
+
+## Análisis de correlación
+
+MEdiante un cuadro de correlación analizaremos las varibales con mayor coeficiente de correlación
+
+```{r}
+library(corrplot)
+library(dplyr)
+Datos <- Datos %>%
+  select("X 1":"X 11")
+corrplot::corrplot(cor(Datos),
+                   method="color",
+                   type="lower",
+                   number.cex=0.7,
+                   addCoef.col = "black",
+                   tl.col="red",
+                   tl.srt=90, 
+                   tl.cex = 0.9,
+                   diag=FALSE,
+                   is.corr = F)
+```
+
+Mediante esta matriz, seleccionamos unicamente las varibales que se correlacionen a un grado igual o mayor de 0,5 en valor absoluto con 3 variables o más.
+
+De este modo sólo quedan las variables:
+
+X1, X2, X6, X10, X11
+
+```{R}
+Datos<- Datos %>%
+  select("X 1", "X 2","X 6", "X 10", "X 11")
+```
+
+## Test de barlett
+```{R}
+library(psych) 
+cortest.bartlett(Datos,n=96)
+```
+
+Note que el p valor es menor al 0.05. Por tanto se rechaza a favor de la hipotesis alternativa. De este modo al menos dos varianzas son diferentes.
+
+## Gráfico de sedimentaci+on y varianza acumulada
+
+```{R}
+cpe<-prcomp(Datos,scale=T)
+names(cpe)
+```
+
+### GRáfico de sedimentación
+
+```{R}
+library("factoextra")
+fviz_eig(cpe,choice = "eigenvalue", addlabels = TRUE, axes = 1,ylim = c(0,5))
+```
+
+Note que únicamente 1 barra es mayor a 1. Por tanto, me recomienda analizar 1 solo componente. Esto con la consideración que igualmente tendremos el 68% de la información.
+
+### Varianza acumulada
+
+```{R}
+library(ggplot2)
+prop_varianza <- cpe$sdev^2 / sum(cpe$sdev^2);prop_varianza*100
+prop_varianza_acum <- cumsum(prop_varianza)
+ggplot(data = data.frame(prop_varianza_acum, pc=1:5),
+       aes(x = pc, y = prop_varianza_acum, group = 1)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")+geom_hline(yintercept=0.8,col=2)
+```
+
+Este criterio me recomienda usar 3 componentes, ya que son los que superan el 0.8 en la gráfica de varianza acumulada.
+
+## Identificación de los individuos y creación del valor del indice para cada individuo
+
+Encontramos que X1 y X2 están correlacionadas y X6, X10 y X11 están correlacioandas igualmente en dirección diferente. Graficamente podríamos sugerir que X2 y X10 tienen mayor poder explicativo. 
+
+
+```{R}
+fviz_pca_var(cpe, col.var = "cos2", 
+             geom.var = c("arrow", "text"), 
+             labelsize = 2, 
+             repel = FALSE)
+```
+
+```{R}
+fviz_pca_ind(cpe,addEllipses=F)
+```
+
+```{R}
+fviz_pca_biplot(cpe)
+```
+
+## Especificación de modelos para explicar X1 y X2
+
+Para esto vamos a hacer un modelo lineal e interpretaremos si los coeficientes son significativos al 5% de confianza
+
+### X1
+
+Para esto tomaremos las varibales que según la matriz de correlación estuvieron por encima del 50% en valor absoluto en el coeficiente de correlación. Estas son: X2, X6, X10 y X11
+
+```{R}
+Reg1 <- lm(`X 1` ~ `X 2`+`X 6`+ `X 10` + `X 11`, data = Datos)
+```
+
+### X2
+
+Para esto tomaremos las varibales que según la matriz de correlación estuvieron por encima del 50% en valor absoluto en el coeficiente de correlación. Estas son: X2, X6, X10 y X11
+
+```{R}
+library(stargazer)
+Reg2 <- lm(`X 2` ~ `X 1`+`X 6`+ `X 10` + `X 11`, data = Datos)
+stargazer(Reg1, Reg2, type = "text", digits=3, omit.stat = c("f", 'ser'))
+```
+
+Note que para X1, las variables X6 y X11 no son significativas y para X2 la variable X10 no es significativa.
